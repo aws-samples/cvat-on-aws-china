@@ -1,0 +1,111 @@
+diff --git a/cvat/requirements/base.txt b/cvat/requirements/base.txt
+index 2ec26515..b3b1f47f 100644
+--- a/cvat/requirements/base.txt
++++ b/cvat/requirements/base.txt
+@@ -5,6 +5,7 @@ django-auth-ldap==2.2.0
+ django-cacheops==5.0.1
+ django-compressor==2.4
+ django-rq==2.3.2
++django-redis==5.0.0
+ EasyProcess==0.3
+ Pillow==8.3.0
+ numpy==1.19.5
+diff --git a/cvat/settings/production.py b/cvat/settings/production.py
+index d6cea898..bc0aa14e 100644
+--- a/cvat/settings/production.py
++++ b/cvat/settings/production.py
+@@ -33,3 +33,20 @@ DATABASES = {
+         'PASSWORD': os.getenv('CVAT_POSTGRES_PASSWORD', ''),
+     }
+ }
++
++# AWS deployment for Redis Cache for Django
++
++CACHES = {
++    "default": {
++        "BACKEND": "django_redis.cache.RedisCache",
++        "LOCATION": "redis://{}:6379/2".format(os.getenv('CVAT_REDIS_HOST', 'cvat_redis')),
++        "OPTIONS": {
++            "CLIENT_CLASS": "django_redis.client.DefaultClient",
++        }
++    }
++}
++
++# AWS deployment for Disk Cache move to node tmp folder
++
++CACHE_ROOT = '/tmp/cache'
++SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+\ No newline at end of file
+diff --git a/supervisord.conf b/supervisord.conf
+index 6d9b8ee2..b515bdcd 100644
+--- a/supervisord.conf
++++ b/supervisord.conf
+@@ -17,40 +17,40 @@ loglevel=debug              ; info, debug, warn, trace
+ pidfile=/tmp/supervisord/supervisord.pid ; pidfile location
+ childlogdir=%(ENV_HOME)s/logs/            ; where child log files will live
+ 
+-[program:ssh-agent]
+-command=bash -c "rm /tmp/ssh-agent.sock -f && /usr/bin/ssh-agent -d -a /tmp/ssh-agent.sock"
+-priority=1
+-autorestart=true
++;[program:ssh-agent]
++;command=bash -c "rm /tmp/ssh-agent.sock -f && /usr/bin/ssh-agent -a /tmp/ssh-agent.sock"
++;priority=1
++;autorestart=true
+ 
+ [program:rqworker_default]
+ command=%(ENV_HOME)s/wait-for-it.sh %(ENV_CVAT_REDIS_HOST)s:6379 -t 0 -- bash -ic \
+     "exec python3 %(ENV_HOME)s/manage.py rqworker -v 3 default"
+-environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
++;environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
+ numprocs=2
+ process_name=rqworker_default_%(process_num)s
+ 
+ [program:rqworker_low]
+ command=%(ENV_HOME)s/wait-for-it.sh %(ENV_CVAT_REDIS_HOST)s:6379 -t 0 -- bash -ic \
+     "exec python3 %(ENV_HOME)s/manage.py rqworker -v 3 low"
+-environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
++;environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
+ numprocs=1
+ 
+ [program:git_status_updater]
+ command=%(ENV_HOME)s/wait-for-it.sh %(ENV_CVAT_REDIS_HOST)s:6379 -t 0 -- bash -ic \
+     "python3 ~/manage.py update_git_states"
+-environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
++;environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
+ numprocs=1
+ 
+ [program:rqscheduler]
+ command=%(ENV_HOME)s/wait-for-it.sh %(ENV_CVAT_REDIS_HOST)s:6379 -t 0 -- bash -ic \
+     "python3 /opt/venv/bin/rqscheduler --host %(ENV_CVAT_REDIS_HOST)s -i 30"
+-environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
++;environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
+ numprocs=1
+ 
+-[program:clamav_update]
+-command=bash -c "if [ \"${CLAM_AV}\" = 'yes' ]; then /usr/bin/freshclam -d \
+-    -l %(ENV_HOME)s/logs/freshclam.log --foreground=true; fi"
+-numprocs=1
++;[program:clamav_update]
++;command=bash -c "if [ \"${CLAM_AV}\" = 'yes' ]; then /usr/bin/freshclam -d \
++;    -l %(ENV_HOME)s/logs/freshclam.log --foreground=true; fi"
++;numprocs=1
+ 
+ [program:runserver]
+ ; Here need to run a couple of commands to initialize DB and copy static files.
+@@ -59,11 +59,13 @@ numprocs=1
+ ; with docker cache. Thus it is necessary to run collectstatic here for such
+ ; apps.
+ command=%(ENV_HOME)s/wait-for-it.sh %(ENV_CVAT_POSTGRES_HOST)s:5432 -t 0 -- bash -ic \
+-    "rm -f /tmp/cvat-server/httpd.pid && python3 ~/manage.py migrate && \
++    "rm -f /tmp/cvat-server/httpd.pid && \
++    ;python3 ~/manage.py migrate && \
++    ;python3 ~/manage.py createsuperuser --no-input; \
+     python3 ~/manage.py collectstatic --no-input && \
+     exec python3 $HOME/manage.py runmodwsgi --log-to-terminal --port 8080 \
+     --limit-request-body 1073741824 --log-level INFO --include-file ~/mod_wsgi.conf \
+     %(ENV_DJANGO_MODWSGI_EXTRA_ARGS)s --locale %(ENV_LC_ALL)s \
+     --server-root /tmp/cvat-server"
+ 
+-environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"
++;environment=SSH_AUTH_SOCK="/tmp/ssh-agent.sock"

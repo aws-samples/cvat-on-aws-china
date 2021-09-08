@@ -4,7 +4,7 @@ This repo help us deploy CVAT on AWS China, which will refactor the [office depl
 
 ## Architecture
 
-![Arch](images/arch.png)
+![Arch](images/Arch.png)
 
 
 This architecture will do:
@@ -80,3 +80,6 @@ docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/docker
 ## CVAT AWS CloudFormation Template
 
 We have crate a [CloudFormation Template](cvat-aws-all.yaml) to deploy the whole architecture on AWS Ningxia region. You should modify the template for all the CVAT docker images you have build. But if you don't want to use your own images you just built you can just deploy the default images from our creations.
+
+## License Summary
+This sample code is made available under the MIT-0 license. See the LICENSE file.

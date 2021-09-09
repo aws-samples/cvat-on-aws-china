@@ -81,5 +81,19 @@ docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/docker
 
 We have crate a [CloudFormation Template](cvat-aws-all.yaml) to deploy the whole architecture on AWS Ningxia region. You should modify the template for all the CVAT docker images you have build. But if you don't want to use your own images you just built you can just deploy the default images from our creations.
 
+## Deep learning serverless functions for automatic labeling
+
+<!--lint disable maximum-line-length-->
+
+| Name                                                                                                    | Type       | Framework  |
+| ------------------------------------------------------------------------------------------------------- | ---------- | ---------- |
+| [Object reidentification](cvat-serverless/functions/endpoints/openvino_reidentification.py)            | reid       | OpenVINO   |
+| [SiamMask](cvat-serverless/functions/endpoints/foolwood_siammask.py)                                   | tracker    | PyTorch    |
+| [Inside-Outside Guidance](cvat-serverless/functions/endpoints/shiyinzhang_iog.py)                     | interactor | PyTorch    |
+| [Faster RCNN](cvat-serverless/functions/endpoints/pth_rcnn.py)                                         | detector   | PyTorch    |
+| [Faster RCNN COCO v2](cvat-serverless/functions/endpoints/tf_rcnn.py)                                  | detector   | TensroFlow |
+
+<!--lint enable maximum-line-length-->
+
 ## License Summary
 This sample code is made available under the MIT-0 license. See the LICENSE file.

@@ -1,6 +1,6 @@
 # CVAT on AWS China
 
-This repo help us deploy CVAT on AWS China, which will refactor the [office deployment](https://openvinotoolkit.github.io/cvat/docs/administration/basics/installation/) architecture.
+This repo initially help us deploy CVAT on AWS China, which will refactor the [office deployment](https://openvinotoolkit.github.io/cvat/docs/administration/basics/installation/) architecture. But we can support deploy this architecture on global Tokyo region by now.
 
 ## Architecture
 
@@ -73,7 +73,7 @@ You can optionally create your own CVAT UI docker image or just use the docker h
 docker build . -f Dockerfile.ui -t openvino/cvat_ui
 aws ecr create-repository --repository-name dockerhub/openvino/cvat_ui
 $(aws ecr get-login --no-include-email)
-docker tag openvino/cvat_server <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/dockerhub/openvino/cvat_ui
+docker tag openvino/cvat_ui <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/dockerhub/openvino/cvat_ui
 docker push <YOUR_AWS_ACCOUNT_ID>.dkr.ecr.cn-northwest-1.amazonaws.com.cn/dockerhub/openvino/cvat_ui
 ```
 
@@ -95,5 +95,15 @@ We have crate a [CloudFormation Template](cvat-aws-all.yaml) to deploy the whole
 
 <!--lint enable maximum-line-length-->
 
+## Deploy the CloudFormation template directly
+We have two CloudFormation template quick start link bellow, and all the necessary AWS resource will be created automatically.
+
+| Region | QuickStart Link  |
+| -------|------------------|
+|Beijing Region | [Quick Click](https://console.amazonaws.cn/cloudformation/home?#/stacks/quickcreate?templateUrl=https://cvat-quickstart.s3.cn-northwest-1.amazonaws.com.cn/latest/cvat-aws-all.yaml) |
+|Tokyo Region | [Quick Click](https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateUrl=https://cvat-aws.s3.ap-northeast-1.amazonaws.com/cvat-aws-ap-northeast-1-all.yaml) |
+<!--lint disable maximum-line-length-->
+
+<!--lint enable maximum-line-length-->
 ## License Summary
 This sample code is made available under the MIT-0 license. See the LICENSE file.

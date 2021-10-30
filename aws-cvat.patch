@@ -1,3 +1,13 @@
+diff --git a/Dockerfile.ui b/Dockerfile.ui
+index 3bf5b66b..c9ef4876 100644
+--- a/Dockerfile.ui
++++ b/Dockerfile.ui
+@@ -1,4 +1,4 @@
+-FROM node:lts-buster AS cvat-ui
++FROM node:14.18.1-buster AS cvat-ui
+ 
+ ARG http_proxy
+ ARG https_proxy
 diff --git a/cvat/requirements/base.txt b/cvat/requirements/base.txt
 index 2ec26515..b3b1f47f 100644
 --- a/cvat/requirements/base.txt

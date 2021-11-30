@@ -1181,29 +1181,29 @@ Resources:
       Containers:
         - ContainerHostname: pthIogContainer
           Image: 975230531453.dkr.ecr.ap-northeast-1.amazonaws.com/sagemaker/pytorch:0.4-cpu-py3-opencv
-          ModelDataUrl: s3://cvat-aws/pth-inside-outside-guidance/model.tar.gz
+          ModelDataUrl: s3://sagemaker-ap-northeast-1-cvat/cvat/pth-inside-outside-guidance/model.tar.gz
           Environment:
             SAGEMAKER_CONTAINER_LOG_LEVEL: '20'
             SAGEMAKER_PROGRAM: inference.py
             SAGEMAKER_REGION: !Ref AWS::Region
-            SAGEMAKER_SUBMIT_DIRECTORY: s3://cvat-aws/pth-inside-outside-guidance/sourcedir.tar.gz
+            SAGEMAKER_SUBMIT_DIRECTORY: s3://sagemaker-ap-northeast-1-cvat/cvat/pth-inside-outside-guidance/sourcedir.tar.gz
         - ContainerHostname: pthFastrcnnContainer
           Image: 975230531453.dkr.ecr.ap-northeast-1.amazonaws.com/sagemaker/torchserve:v1
-          ModelDataUrl: s3://cvat-aws/pth-fastrcnn/fastrcnn.tar.gz
+          ModelDataUrl: s3://sagemaker-ap-northeast-1-cvat/cvat/pth-fastrcnn/fastrcnn.tar.gz
         - ContainerHostname: tfFastrcnnContainer
           Image: 763104351884.dkr.ecr.ap-northeast-1.amazonaws.com/tensorflow-inference:2.4.1-cpu
-          ModelDataUrl: s3://cvat-aws/tf-faster-rcnn-inception-v2/faster_rcnn_inception_v2_coco.tar.gz
+          ModelDataUrl: s3://sagemaker-ap-northeast-1-cvat/cvat/tf-faster-rcnn-inception-v2/faster_rcnn_inception_v2_coco.tar.gz
         - ContainerHostname: pthSimmaskContainer
           Image: 975230531453.dkr.ecr.ap-northeast-1.amazonaws.com/sagemaker/pytorch:0.4.1-cpu-py3-siammask
-          ModelDataUrl: s3://cvat-aws/pth-foolwood-siammask/model.tar.gz
+          ModelDataUrl: s3://sagemaker-ap-northeast-1-cvat/cvat/pth-foolwood-siammask/model.tar.gz
           Environment:
             SAGEMAKER_CONTAINER_LOG_LEVEL: '20'
             SAGEMAKER_PROGRAM: inference.py
             SAGEMAKER_REGION: !Ref AWS::Region
-            SAGEMAKER_SUBMIT_DIRECTORY: s3://cvat-aws/pth-foolwood-siammask/sourcedir.tar.gz
+            SAGEMAKER_SUBMIT_DIRECTORY: s3://sagemaker-ap-northeast-1-cvat/cvat/pth-foolwood-siammask/sourcedir.tar.gz
         - ContainerHostname: openvinoIdentificationContainer
           Image: 975230531453.dkr.ecr.ap-northeast-1.amazonaws.com/sagemaker/openvino:model_server_2021.3
-          ModelDataUrl: s3://cvat-aws/openvinio-person-reidentification-retail/person-reidentification-retail.tar.gz
+          ModelDataUrl: s3://sagemaker-ap-northeast-1-cvat/cvat/openvinio-person-reidentification-retail/person-reidentification-retail.tar.gz
 
   CvatSagemakerEndpointConfig:
     Type: AWS::SageMaker::EndpointConfig
